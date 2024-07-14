@@ -30,15 +30,19 @@ class MainActivity : AppCompatActivity() {
         "Use a profiler",
         "Break it into smaller pieces using BIG hammer.."
     )
+
+    var currentSelectedAnswerPosition = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        // enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
         val questionTextView: TextView = findViewById(R.id.questionTextView)
         val resultTextView: TextView = findViewById(R.id.resultTextView)
         val asnSpinner: Spinner = findViewById(R.id.answSpinner)
         val checkAnswerButton: Button = findViewById(R.id.btnCheckAnswer)
+        val playAgainButton: Button = findViewById(R.id.btnPlayAgain)
 
         var currentQuestionIndex = 0
 
@@ -50,7 +54,10 @@ class MainActivity : AppCompatActivity() {
 
         asnSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    currentSelectedAnswerPosition = position
+                if (position != null && position > 0) {
                     resultTextView.text = "Are you sure?"
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
@@ -59,6 +66,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         checkAnswerButton.setOnClickListener {
+            if (currentSelectedAnswerPosition != null) {
+                val selectedAnswer = answers[currentQuestionIndex][currentSelectedAnswerPosition]
+                if (selectedAnswer == correctAnswers[currentQuestionIndex]) {
+                    resultTextView.text = "Correct!"
+                } else {
+                    resultTextView.text = "Oops! Try again."
+                }
+            }
+        }
+
+        playAgainButton.setOnClickListener {
             currentQuestionIndex = (currentQuestionIndex + 1) % questions.size
             updateQuestion()
             resultTextView.text = ""
